@@ -20,7 +20,7 @@ function StartPage() {
 
     return (
         <div>
-            <p>Welcome to Wingspan</p>
+            <p>Welcome to AIExp</p>
         </div>
     )
 }
