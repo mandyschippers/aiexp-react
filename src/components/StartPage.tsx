@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from '../api/index.ts';
 
 /** typescript function **/
 function StartPage() {
@@ -12,34 +13,25 @@ function StartPage() {
     
         const sendMessage = () => {
             const message = talk;
-            axios.post('http://localhost:5000/api/message', { message } , {
-                headers: {
-                    Authorization: `Bearer not_so_secret_key` // Retrieve and use token
-                }
+            api.post('/message', { message })
+            .then(response => {
+                setTalk('');
+                console.log(response.data);
             })
-                .then(response => {
-                    setTalk('');
-                    console.log(response.data);
-                })
-                .catch(error => {
-                    console.error('Error sending message', error);
-                });
+            .catch(error => {
+                console.error('Error sending message', error);
+            });
         }
     
         useEffect(() => {
-            axios.get('http://localhost:5000/api/hello', {
-                headers: {
-                    Authorization: `Bearer not_so_secret_key` // Retrieve and use token
-                }
-            })
+            api.get('/hello')
                 .then(response => {
                     console.log(response.data);
                 })
                 .catch(error => {
                     console.error('Error fetching protected data', error);
                 });
-    
-        })
+        },[])
     
         return (
             <div>
