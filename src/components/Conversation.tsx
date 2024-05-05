@@ -20,7 +20,7 @@ const Conversation: React.FC = () => {
 
     const sendMessage = () => {
         const message = talk;
-        api.post(`/message`, { 'message': message, 'conversation_id': conversationId })
+        api.post(`/message`, { 'message': message, 'conversation_id': conversationId, 'message_history' : segments })
         .then(response => {
             setTalk('');
             getSegments();
