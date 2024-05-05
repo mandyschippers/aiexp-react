@@ -1,6 +1,6 @@
-import logo from './logo.svg';
 import './App.css';
-import StartPage from './components/StartPage';
+import React from 'react';
+import StartPage from './components/StartPage.tsx';
 
 function App() {
   return (
