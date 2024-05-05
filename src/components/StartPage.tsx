@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/index.ts';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 /** typescript function **/
 function StartPage() {
 
     const [name, setName] = useState('');
+    const [conversations, setConversations] = useState([]); // [conversation1, conversation2, conversation3
+    const navigate = useNavigate();
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
@@ -13,8 +17,10 @@ function StartPage() {
     const startNewConversation = () => {
         api.post('/new_conversation', { name })
             .then(response => {
-                console.log(response.data);
                 setName('');
+                if (response.data.conversation_id) {
+                    navigate(`/conversation/${response.data.conversation_id}`);
+                }  
             })
             .catch(error => {
                 console.error('Error starting new conversation', error);
@@ -22,8 +28,9 @@ function StartPage() {
     }
 
     useEffect(() => {
-        api.get('/hello')
+        api.get('/get_conversations')
             .then(response => {
+                setConversations(response.data);
                 console.log(response.data);
             })
             .catch(error => {
@@ -36,10 +43,15 @@ function StartPage() {
         <h1>Welcome to AIExp</h1>
         <h2>Conversations</h2>
         <ul style={{ listStyleType: 'none' }}>
-            <li><a href="/">Testing basic conversation - March 27, 2024 09:00</a></li>
-            <li><a href="/">Testing conversation with emotions - March 28, 2024 09:00</a></li>
+            {conversations.map((conversation: any) => (
+                <li key={conversation.id}>
+                    <Link to={`/conversation/${conversation.id}`}>{conversation.name}</Link>
+                </li>
+            ))}
         </ul>
         <h2>Start a new conversation</h2>
+        <label htmlFor="name">Please name your new conversation</label>
+        <br />
         <input
                 type="text"
                 name="name"
