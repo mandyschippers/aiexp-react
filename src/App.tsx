@@ -11,7 +11,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<StartPage />} />
-        <Route path="/conversation/:conversationId" element={<Conversation conversationId={conversationId} />} />
+        <Route path="/conversation/:conversationId" element={<Conversation />} />
       </Routes>
     </BrowserRouter>
     </div>

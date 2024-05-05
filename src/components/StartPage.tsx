@@ -42,7 +42,7 @@ function StartPage() {
         <div>
         <h1>Welcome to AIExp</h1>
         <h2>Conversations</h2>
-        <ul style={{ listStyleType: 'none' }}>
+        <ul style={{ listStyleType: 'none', padding: 0 }}>
             {conversations.map((conversation: any) => (
                 <li key={conversation.id}>
                     <Link to={`/conversation/${conversation.id}`}>{conversation.name}</Link>

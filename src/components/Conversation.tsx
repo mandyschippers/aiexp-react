@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/index.ts';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 
 interface ConversationInterface {
@@ -12,6 +12,7 @@ const Conversation: React.FC = () => {
     const { conversationId } = useParams();
     const [talk, setTalk] = useState('');
     const [conversation, setConversation] = useState({} as ConversationInterface); 
+    const [segments, setSegments] = useState([]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTalk(event.target.value);
@@ -19,7 +20,7 @@ const Conversation: React.FC = () => {
 
     const sendMessage = () => {
         const message = talk;
-        api.post(`/message/${conversationId}`, { message })
+        api.post(`/message`, { 'message': message, 'conversation_id': conversationId })
         .then(response => {
             setTalk('');
             console.log(response.data);
@@ -34,7 +35,11 @@ const Conversation: React.FC = () => {
         api.get(`/get_conversation/${conversationId}`)
         .then(response => {
             setConversation(response.data);
-            console.log(response.data);
+            api.get(`/get_segments/${response.data.id}`)
+            .then(response => {
+                setSegments(response.data);
+                console.log('segments', response.data);
+            })
         })
         .catch(error => {
             console.error('Error fetching conversation', error);
@@ -44,6 +49,19 @@ const Conversation: React.FC = () => {
     return (
         <div>
             <h1>{conversation ? conversation.name : ''}</h1>
+            <ul style={{ listStyleType: 'none', padding: 0 }}>
+                {segments.map((segment: any) => (
+                    <li key={segment.id}>
+                        <strong>My message:</strong>
+                        <br />
+                        {segment.message}
+                        <br />
+                        <strong>Reply:</strong>
+                        <br/>
+                        {segment.reply}
+                    </li>
+                ))}
+            </ul>
             <input
                 type="text"
                 name="message"
@@ -51,6 +69,8 @@ const Conversation: React.FC = () => {
                 onChange={handleInputChange}
             />
             <button onClick={() => sendMessage()}>Send</button>
+            <br/><br/>
+            <Link to="/">Back to Conversations</Link>
         </div>
     );
 };
