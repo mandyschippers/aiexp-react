@@ -23,10 +23,22 @@ const Conversation: React.FC = () => {
         api.post(`/message`, { 'message': message, 'conversation_id': conversationId })
         .then(response => {
             setTalk('');
+            getSegments();
             console.log(response.data);
         })
         .catch(error => {
             console.error('Error sending message', error);
+        });
+    }
+
+    const getSegments = () => {
+        return api.get(`/get_segments/${conversationId}`)
+        .then(response => {
+            setSegments(response.data);
+            console.log('segments', response.data);
+        })
+        .catch(error => {
+            console.error('Error fetching segments', error);
         });
     }
 
