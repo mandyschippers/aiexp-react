@@ -1,36 +1,32 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
-import axios from 'axios';
-import StartPage from './StartPage';
+import { render, screen } from '@testing-library/react';
+import { BrowserRouter, useNavigate } from 'react-router-dom';
+import StartPage from './StartPage.tsx';
+import userEvent from '@testing-library/user-event'; // Make sure to import userEvent
 
-jest.mock('axios');
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // Use all the actual exported objects from the original module
+  useNavigate: jest.fn(), // Mock only the useNavigate function
+}));
 
-describe('StartPage', () => {
-  it('renders the component', () => {
-    render(<StartPage />);
-    // Add your assertions here
-  });
+beforeEach(() => {
+  jest.clearAllMocks(); // Clear mocks before each test
+});
 
-  it('updates the input value on change', () => {
-    const { getByLabelText } = render(<StartPage />);
-    const input = getByLabelText('message') as HTMLInputElement;
-    fireEvent.change(input, { target: { value: 'Hello' } });
-    expect(input.value).toBe('Hello');
-  });
+afterAll(() => {
+  jest.restoreAllMocks(); // Restore all mocks to their original values after all tests
+});
 
-  it('sends a message when the send button is clicked', async () => {
-    const { getByLabelText, getByText } = render(<StartPage />);
-    const input = getByLabelText('message');
-    const sendButton = getByText('Send');
+test('displays a list of conversations', () => {
+  render(
+    <BrowserRouter>
+      <StartPage />
+    </BrowserRouter>
+  );
 
-    fireEvent.change(input, { target: { value: 'Hello' } });
-    fireEvent.click(sendButton);
-
-    await waitFor(() => {
-      expect(axios.post).toHaveBeenCalledWith('/message', { message: 'Hello' });
-      // Add your assertions for the response here
-    });
-  });
-
-  // Add more tests as needed
+  // Assert that a list of conversations is displayed
+  const heading = screen.getByRole('heading', { name: /conversations/i });
+  expect(heading).toBeInTheDocument();
+  const list = screen.getByRole('list');
+  expect(list).toBeInTheDocument();
 });

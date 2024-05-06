@@ -58,7 +58,7 @@ function StartPage() {
                 value={name}
                 onChange={handleNameChange}
             />
-        <button onClick={startNewConversation}>Start</button>
+        <button onClick={startNewConversation} name="start">Start</button>
         </div>
     )
 
