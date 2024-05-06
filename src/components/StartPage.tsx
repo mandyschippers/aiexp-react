@@ -31,7 +31,7 @@ function StartPage() {
         api.get('/get_conversations')
             .then(response => {
                 setConversations(response.data);
-                console.log(response.data);
+                // console.log(response.data);
             })
             .catch(error => {
                 console.error('Error fetching protected data', error);

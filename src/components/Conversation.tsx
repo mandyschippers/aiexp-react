@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/index.ts';
 import { Link, useParams } from 'react-router-dom';
-
+import SegmentSettings from './SegmentSettings.tsx';
 
 interface ConversationInterface {
     name: string;
@@ -13,6 +13,7 @@ const Conversation: React.FC = () => {
     const [talk, setTalk] = useState('');
     const [conversation, setConversation] = useState({} as ConversationInterface); 
     const [segments, setSegments] = useState([]);
+    const [segmentSettingsId, setSegmentSettingsId] = useState(0);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTalk(event.target.value);
@@ -24,7 +25,7 @@ const Conversation: React.FC = () => {
         .then(response => {
             setTalk('');
             getSegments();
-            console.log(response.data);
+            // console.log(response.data);
         })
         .catch(error => {
             console.error('Error sending message', error);
@@ -35,7 +36,7 @@ const Conversation: React.FC = () => {
         return api.get(`/get_segments/${conversationId}`)
         .then(response => {
             setSegments(response.data);
-            console.log('segments', response.data);
+            // console.log('segments', response.data);
         })
         .catch(error => {
             console.error('Error fetching segments', error);
@@ -43,14 +44,14 @@ const Conversation: React.FC = () => {
     }
 
     useEffect(() => {
-        console.log(conversationId)
+        // console.log(conversationId)
         api.get(`/get_conversation/${conversationId}`)
         .then(response => {
             setConversation(response.data);
             api.get(`/get_segments/${response.data.id}`)
             .then(response => {
                 setSegments(response.data);
-                console.log('segments', response.data);
+                setSegmentSettingsId(response.data[response.data.length - 1].segment_settings_id);
             })
         })
         .catch(error => {
@@ -61,6 +62,10 @@ const Conversation: React.FC = () => {
     return (
         <div>
             <h1>{conversation ? conversation.name : ''}</h1>
+            <SegmentSettings 
+                readOnly={false} 
+                segmentSettingsId={segmentSettingsId}
+            />
             <ul style={{ listStyleType: 'none', padding: 0 }}>
                 {segments.map((segment: any) => (
                     <li key={segment.id}>
