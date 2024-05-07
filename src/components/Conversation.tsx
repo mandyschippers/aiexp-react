@@ -14,6 +14,7 @@ const Conversation: React.FC = () => {
     const [conversation, setConversation] = useState({} as ConversationInterface); 
     const [segments, setSegments] = useState([]);
     const [segmentSettingsId, setSegmentSettingsId] = useState(0);
+    const [segmentSettings, setSegmentSettings] = useState<any>({});
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTalk(event.target.value);
@@ -21,7 +22,7 @@ const Conversation: React.FC = () => {
 
     const sendMessage = () => {
         const message = talk;
-        api.post(`/message`, { 'message': message, 'conversation_id': conversationId, 'message_history' : segments })
+        api.post(`/message`, { 'message': message, 'conversation_id': conversationId, 'message_history' : segments, 'segment_settings' : formatSegmentSettings() })
         .then(response => {
             setTalk('');
             getSegments();
@@ -41,6 +42,27 @@ const Conversation: React.FC = () => {
         .catch(error => {
             console.error('Error fetching segments', error);
         });
+    }
+
+
+    const onSettingsChange = (settings: any) => {
+        console.log('settings updated', settings);
+        setSegmentSettings(settings);
+      
+        
+    }
+
+    const formatSegmentSettings = () => {
+        if (segmentSettings  && segmentSettings.modules) {
+            const moduleIds = segmentSettings.modules.map((module: any) => module.id);
+            const formattedSettings =
+            {
+                'segment_id': segmentSettings.id,
+                'model_id': segmentSettings.model_id,
+                'modules': moduleIds
+            };  
+            return formattedSettings;
+        }
     }
 
     useEffect(() => {
@@ -65,6 +87,7 @@ const Conversation: React.FC = () => {
             <SegmentSettings 
                 readOnly={false} 
                 segmentSettingsId={segmentSettingsId}
+                onSettingsChange={onSettingsChange}
             />
             <ul style={{ listStyleType: 'none', padding: 0 }}>
                 {segments.map((segment: any) => (
